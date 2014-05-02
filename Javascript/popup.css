@@ -1,0 +1,42 @@
+#PopUp, #errorPopUp {
+    width: 700px;
+    height: 400px;
+    z-index: 1000;
+    top: 30%;
+    bottom: 30%;
+    right: 30%;
+    left: 30%;
+    position: absolute;
+    margin: 0 auto;
+    border-style: solid;
+    border-top-color: #F48A00;
+    border-right-color: #F48A00;
+    border-bottom-color: #400055;
+    border-left-color:  #400055;
+    border-width: 10px;
+    background: #FFFFFF;
+    opacity: 1.0;
+    overflow: auto;
+    font-size: 20px;
+    padding-right: 10px;
+    padding-left: 10px;
+    text-align: center;
+}
+
+#PopUp h1, #errorPopUp h1 {
+    margin-right: auto;
+    magin-left: auto;
+    width: 100%;
+    text-align: center;
+    font-size: 40px;
+    margin-bottom: 20px;
+}
+
+#PopUp .nextQuestion, #errorPopup .button {
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: 50%;
+    font-size: 30px;
+}
