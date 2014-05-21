@@ -1,9 +1,10 @@
-function question(tickall, question, answers, answerText, picture) {
+function question(tickall, question, answers, answerText, picture, backenabled) {
      this.tickall = tickall;
      this.question = question;
      this.answers = answers;
      this.answerText = answerText;
      this.picture = picture;
+	 this.backbutton = backenabled;
 }
 
 function answer(answerText, correct) {
@@ -15,13 +16,13 @@ questions = new Array();
 answersOne = new Array();
 answersOne.push(new answer("Yes", true));
 answersOne.push(new answer("No", false));
-questions.push(new question(false, "The application is working?", answersOne, "Yes, the application is working.", null));
+questions.push(new question(false, "The application is working?", answersOne, "Yes, the application is working.", null, false));
 
 answersTwo = new Array();
 answersTwo.push(new answer("Checkbox One", true));
 answersTwo.push(new answer("Checkbox Two", true));
 answersTwo.push(new answer("Checkbox Three", true));
-questions.push(new question(true, "Example of Checkboxes.", answersTwo, "To get this correct, you needed to select all the values.", null));
+questions.push(new question(true, "Example of Checkboxes.", answersTwo, "To get this correct, you needed to select all the values.", null, false));
 
 correctAnswers = 0;
 $question = $("#question");
@@ -127,9 +128,9 @@ function Popup(correct, text, animationSpeed) {
                $Popup.append(text);
                $Popup.append("</p>");
           }
-          $Popup.append('<input type="button" value="Next Question" class="css-nextQuestion js-styleButton js-nextQuestion" />');    
+          $Popup.append('<input type="button" value="Next Question" class="css-nextQuestion js-styleButton js-nextQuestion" />');
           $(".js-nextQuestion").on("click", function(event) {
-                $(this).prop('disabled', 'disabled');
+                $(this).siblings().andSelf().prop('disabled', 'disabled');
                 $Popup.fadeToggle(animationSpeed, "swing", function() { $Popup.empty(); });
                 questionNumber++;
                 if (questionNumber < questions.length) {
@@ -139,6 +140,17 @@ function Popup(correct, text, animationSpeed) {
                      displayEndingPage();
                 }   
           });
+		  if (questions[questionNumber].backbutton) {
+               $Popup.append('<input type="button" value="Retry" class="css-nextQuestion js-styleButton js-retry" />');
+               $(".js-retry").on("click", function(event) {
+					$(this).siblings().andSelf().prop('disabled', 'disabled');
+                    $Popup.fadeToggle(animationSpeed, "swing", function() { $Popup.empty(); });
+					if (correct) {
+					     correctAnswers--;
+					}
+                         displayQuestion(questionNumber);  
+                });		   
+		  }
           $Popup.fadeToggle(animationSpeed);          
 }
 
