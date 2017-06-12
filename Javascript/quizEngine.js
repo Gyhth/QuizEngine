@@ -24,7 +24,6 @@ answersTwo.push(new answer("Checkbox Two", true));
 answersTwo.push(new answer("Checkbox Three", true));
 questions.push(new question(true, "Example of Checkboxes.", answersTwo, "To get this correct, you needed to select all the values.", null, false));
 
-correctAnswers = 0;
 $question = $("#question");
 $content = $("#content");
 
@@ -45,6 +44,7 @@ quizEngineClass.prototype = {
   displayKeyboard: false,
   animationSpeed: 500,
   questionNumber: 0,
+  correctAnswers: 0,
 
   displayQuestion: function(number) {
     var thisQuizClass = this;
@@ -83,7 +83,7 @@ quizEngineClass.prototype = {
 
   displayIntro: function() {
     var thisQuizClass = this;
-    correctAnswers = 0;
+    this.correctAnswers = 0;
     this.questionNumber = 0;
     $firstName = null;
     $lastName = null;
@@ -122,7 +122,7 @@ quizEngineClass.prototype = {
     missedAnswers = $.grep(answers, function(el) {
       return $.inArray(el, selected) == -1
     });
-    if (missedAnswers.length > 0) {
+    if (missedAnswers.length > 0 || selected.length > answers.length) {
       correct = false;
     }
     thisQuizClass.Popup(correct, questions[thisQuizClass.questionNumber].answerText, this.animationSpeed);
@@ -132,7 +132,7 @@ quizEngineClass.prototype = {
     var thisQuizClass = this;
     if (correct) {
       $Popup.append("<h1 class='css-correctHeader'>Correct</h1>");
-      correctAnswers++;
+      this.correctAnswers++;
     } else {
       $Popup.append("<h1 class='css-incorrectHeader'>Incorrect...</h1>");
     }
@@ -167,9 +167,9 @@ quizEngineClass.prototype = {
           $Popup.empty();
         });
         if (correct) {
-          correctAnswers--;
+          thisQuizClass.correctAnswers--;
         }
-        thisQuizClass.displayQuestion(this.questionNumber);
+        thisQuizClass.displayQuestion(thisQuizClass.questionNumber);
       });
     }
     $Popup.fadeToggle(thisQuizClass.animationSpeed);
@@ -179,8 +179,8 @@ quizEngineClass.prototype = {
   displayEndingPage: function() {
     var thisQuizClass = this;
     $content.empty();
-    $content.append("<div id='score'>" + correctAnswers + "/" + questions.length + "</div>");
-    if (correctAnswers == questions.length) {
+    $content.append("<div id='score'>" + this.correctAnswers + "/" + questions.length + "</div>");
+    if (this.correctAnswers == questions.length) {
       $content.append("<div id='infoRequestHeader'>Text Goes Here</div>");
       $content.append("<p /><form id='contactInfo' name='contactInfo' action=''></form><p />");
       $form = $("#contactInfo");
