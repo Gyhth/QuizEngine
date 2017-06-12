@@ -175,6 +175,10 @@ quizEngineClass.prototype = {
       $form.append("<label for='opt-in' class='css-optInLabel'>Opt-In To Win:</label><input type='checkbox' name='opt-in' id='chkOptIn' value='true' checked='checked' class='css-optInCheckbox' /><br />");
       $form.append("<input type='submit' class='css-submitContact js-styleButton' id='submitContact' value='Submit!' />");
       if (this.displayKeyboard) {
+        $("body").append('<div id="virtualKeyboard"></div>');
+        $("head").append('<script src="./Javascript/jsKeyboard.js" type="text/javascript"></script>');
+        $("head").append('<link rel="stylesheet" type="text/css" href="./CSS/jsKeyboard.css" media="screen" />');
+
         jsKeyboard.init("virtualKeyboard");
         $("#txtfirstname, #txtlastname, #txtemail").focusin(function() {
           jsKeyboard.focus(this)
