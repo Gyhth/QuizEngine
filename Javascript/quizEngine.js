@@ -30,15 +30,20 @@ $content = $("#content");
 animationSpeed = 500;
 
 $(function() {
+  var quizEngine = new quizEngineClass();
      $("body").append('<div id="PopUp"></div>');
      $Popup = $("#PopUp");
      $Popup.hide();
      questionNumber = 0;
-     displayIntro();
+     quizEngine.displayIntro();
      jsKeyboard.init("virtualKeyboard");
 });
 
-function displayQuestion(number) {
+var quizEngineClass = function(){};
+
+quizEngineClass.prototype = {
+
+displayQuestion: function(number) {
      $content.empty();
      $content.append("<div id='question'>"+questions[number].question+"</div>");
      $question.text(questions[number].question);
@@ -46,7 +51,7 @@ function displayQuestion(number) {
           for (i=0; i < questions[number].answers.length; i++) {
                answerNumber = i+1;
                if (answerNumber % 2 && answerNumber < questions[number].answers.length) {
-                    floatClass = "css-clsFloatLeft"; 
+                    floatClass = "css-clsFloatLeft";
                }
                else if (answerNumber % 2 && answerNumber == questions[number].answers.length) {
                     floatClass = "css-clsCenter";
@@ -56,7 +61,7 @@ function displayQuestion(number) {
                }
                buttonAnswer = "btnAnswer" + i;
                $content.append("<div id='answer"+i+"' class='"+floatClass+"'><input type='button' id='"+buttonAnswer+"' value='"+questions[number].answers[i].answerText+"' class='js-styleButton css-answerbtn' /></div>");
-               $("#"+buttonAnswer).click(function() { checkAnswer(this.id) }); 
+               $("#"+buttonAnswer).click(function() { checkAnswer(this.id) });
           }
      }
      else {
@@ -64,14 +69,14 @@ function displayQuestion(number) {
        $tickAllDiv = $("#tickAll");
        for (i=0; i < questions[number].answers.length; i++) {
             tickAnswer = "chkAnswer" + i;
-            $tickAllDiv.append("<label class='css-checkboxLabel'><input type='checkbox' id='"+tickAnswer+"' value='"+questions[number].answers[i].answerText+"'/>"+questions[number].answers[i].answerText+"</label>");            
+            $tickAllDiv.append("<label class='css-checkboxLabel'><input type='checkbox' id='"+tickAnswer+"' value='"+questions[number].answers[i].answerText+"'/>"+questions[number].answers[i].answerText+"</label>");
        }
        $tickAllDiv.append("<input type='button' id='btnSubmit' value='Submit Answer' class='js-styleButton css-tickSubmit' />");
        $("#btnSubmit").click(function () { checkTickAnswers(); });
      }
-}
+},
 
-function displayIntro() {
+displayIntro: function() {
      correctAnswers = 0;
      $firstName = null;
      $lastName = null;
@@ -80,15 +85,15 @@ function displayIntro() {
      $content.empty();
      $content.append("<div id='question' class='css-introDivision'><input type='button' id='btnStart' class='js-styleButton css-startQuizBtn' value='Start The Quiz!' /></div>");
      $("#btnStart").click(function() { displayQuestion(0); });
-}
+},
 
-function checkAnswer(selectedInput) {
+checkAnswer: function(selectedInput) {
           index = selectedInput.replace("btnAnswer", "");
           $("#content input").prop('disabled', 'disabled');
           Popup(questions[questionNumber].answers[index].correct, questions[questionNumber].answerText, animationSpeed);
-}
+},
 
-function checkTickAnswers() {
+checkTickAnswers: function() {
      var selected = new Array();
      var answers = new Array();
      var missedAnswers = new Array();
@@ -102,15 +107,15 @@ function checkTickAnswers() {
           if (questions[questionNumber].answers[i].correct) {
                answers.push(i);
           }
-     }     
+     }
      missedAnswers = $.grep(answers, function(el){return $.inArray(el, selected) == -1});
      if (missedAnswers.length > 0) {
           correct = false;
-     } 
+     }
      Popup(correct, questions[questionNumber].answerText, animationSpeed);
-}
- 
-function Popup(correct, text, animationSpeed) {
+},
+
+Popup: function (correct, text, animationSpeed) {
      if (correct) {
           $Popup.append("<h1 class='css-correctHeader'>Correct</h1>");
           correctAnswers++;
@@ -138,7 +143,7 @@ function Popup(correct, text, animationSpeed) {
                 }
                 else {
                      displayEndingPage();
-                }   
+                }
           });
 		  if (questions[questionNumber].backbutton) {
                $Popup.append('<input type="button" value="Retry" class="css-nextQuestion js-styleButton js-retry" />');
@@ -148,14 +153,14 @@ function Popup(correct, text, animationSpeed) {
 					if (correct) {
 					     correctAnswers--;
 					}
-                         displayQuestion(questionNumber);  
-                });		   
+                         displayQuestion(questionNumber);
+                });
 		  }
-          $Popup.fadeToggle(animationSpeed);          
-}
+          $Popup.fadeToggle(animationSpeed);
+},
 
 
-function displayEndingPage() {
+displayEndingPage: function() {
      $content.empty();
      $content.append("<div id='score'>"+correctAnswers+"/"+questions.length+"</div>");
      if (correctAnswers == questions.length) {
@@ -176,15 +181,15 @@ function displayEndingPage() {
           $("#btnStartOver").on("click", function() {
                displayIntro();
           });
-}
+},
 
-function verifySubmission() {
+verifySubmission: function() {
      var errors = Array();
      var error = false;
      $firstName = $("#txtfirstname");
      $lastName = $("#txtlastname");
      $email = $("#txtemail");
-     $optIn = $("#chkOptIn");  
+     $optIn = $("#chkOptIn");
      if ($firstName.val().length == 0)  {
           error = true;
           errors.push("You didn't enter a first name.");
@@ -196,7 +201,7 @@ function verifySubmission() {
      if ($email.val().length == 0 || !IsEmail($email.val())) {
           error = true;
           errors.push("You didn't enter a valid email address.");
-     } 
+     }
      if (!$optIn.is(':checked')) {
           error = true;
           errors.push("You didn't opt in for us to contact you.");
@@ -207,17 +212,17 @@ function verifySubmission() {
      }
      else {
           submitForm();
-     }    
+     }
      return false;
-}
+},
 
 
-function IsEmail(email) {
+IsEmail: function(email) {
      var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
      return regex.test(email);
-}
+},
 
-function errorPopUp(errors, animationSpeed) {
+errorPopUp: function(errors, animationSpeed) {
      var errorCount = errors.length;
      $Popup.append("<h1>Errors</h1>");
      $Popup.append("<ul>");
@@ -225,12 +230,12 @@ function errorPopUp(errors, animationSpeed) {
           $Popup.append("<li>"+errors[i]+"</li>");
      }
      $Popup.append("</ul>");
-     $Popup.append('<input type="button" value="Fix" class="css-errorFix js-styleButton" />');    
-     $Popup.append('<input type="button" value="Continue" class="css-errorOkay js-styleButton" />');   
+     $Popup.append('<input type="button" value="Fix" class="css-errorFix js-styleButton" />');
+     $Popup.append('<input type="button" value="Continue" class="css-errorOkay js-styleButton" />');
      $(".errorOkay").click(function(event) {
            $("#Popup input").attr('disabled', 'disabled');
            $Popup.empty();
-           submitForm();   
+           submitForm();
      });
      $(".errorFix").click(function(event) {
           $("#submitContact").removeAttr('disabled');
@@ -238,10 +243,10 @@ function errorPopUp(errors, animationSpeed) {
           $Popup.fadeToggle(animationSpeed);
      });
      $Popup.fadeToggle(animationSpeed);
-}
+},
 
 
-function submitForm() {
+submitForm: function() {
     request = $.ajax({
       url:"/Quiz/insertToDB.php",
       type:"POST",
@@ -249,24 +254,25 @@ function submitForm() {
       cache:false,
      });
      request.done(function() {
-        if ($optIn.is(':checked')) {  
-             $Popup.append("<h1>Good luck!</h1>")  
+        if ($optIn.is(':checked')) {
+             $Popup.append("<h1>Good luck!</h1>")
                .append("<p>We will be in touch soon.</p>")
         }
         else {
              $Popup.append("<h1>Thanks for Playing!</h1>");
         }
         $Popup.append("<input type='button' value='Okay' class='css-btnStartOver' />");
-        $(".btnStartOver").click(function() { 
+        $(".btnStartOver").click(function() {
              location.reload(false);
-             $Popup.fadeToggle(animationSpeed, "swing", function() { $Popup.empty(); }); 
+             $Popup.fadeToggle(animationSpeed, "swing", function() { $Popup.empty(); });
         });
-        if (!$Popup.is(':visible')) {    
+        if (!$Popup.is(':visible')) {
              $Popup.fadeToggle(animationSpeed);
-        }  
+        }
       });
       request.fail(function (xmlHttpRequest, textStatus, errorThrown) {
          console.log(xmlHttpRequest.responseText);
          console.log(errorThrown);
       });
 }
+};
