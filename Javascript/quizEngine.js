@@ -160,7 +160,6 @@ quizEngineClass.prototype = {
     $Popup.fadeToggle(thisQuizClass.animationSpeed);
   },
 
-
   displayEndingPage: function() {
     var thisQuizClass = this;
     $content.empty();
@@ -178,13 +177,11 @@ quizEngineClass.prototype = {
         $("body").append('<div id="virtualKeyboard"></div>');
         $("head").append('<script src="./Javascript/jsKeyboard.js" type="text/javascript"></script>');
         $("head").append('<link rel="stylesheet" type="text/css" href="./CSS/jsKeyboard.css" media="screen" />');
-
         jsKeyboard.init("virtualKeyboard");
         $("#txtfirstname, #txtlastname, #txtemail").focusin(function() {
           jsKeyboard.focus(this)
         });
       }
-
       $submitContact = $("#contactInfo");
       $submitContact.submit(function() {
         return thisQuizClass.verifySubmission()
@@ -230,7 +227,6 @@ quizEngineClass.prototype = {
     return false;
   },
 
-
   IsEmail: function(email) {
     var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
     return regex.test(email);
@@ -259,7 +255,6 @@ quizEngineClass.prototype = {
     });
     $Popup.fadeToggle(thisQuizClass.animationSpeed);
   },
-
 
   submitForm: function() {
     request = $.ajax({
