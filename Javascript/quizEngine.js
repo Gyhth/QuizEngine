@@ -28,16 +28,17 @@ $question = $("#question");
 $content = $("#content");
 
 $(function() {
-  var quizEngine = new quizEngineClass(true, 500);
+  var quizEngine = new quizEngineClass(true, 500, questions);
   $("body").append('<div id="PopUp"></div>');
   $Popup = $("#PopUp");
   $Popup.hide();
   quizEngine.displayIntro();
 });
 
-var quizEngineClass = function(displayKeyboard, animationSpeed) {
+var quizEngineClass = function(displayKeyboard, animationSpeed, questions) {
   this.animationSpeed = animationSpeed;
   this.displayKeyboard = displayKeyboard;
+  this.questions = questions;
 };
 
 quizEngineClass.prototype = {
@@ -45,24 +46,25 @@ quizEngineClass.prototype = {
   animationSpeed: 500,
   questionNumber: 0,
   correctAnswers: 0,
+  questions: "",
 
   displayQuestion: function(number) {
     var thisQuizClass = this;
     $content.empty();
-    $content.append("<div id='question'>" + questions[number].question + "</div>");
-    $question.text(questions[number].question);
-    if (!questions[number].tickall) {
-      for (i = 0; i < questions[number].answers.length; i++) {
+    $content.append("<div id='question'>" + this.questions[number].question + "</div>");
+    $question.text(this.questions[number].question);
+    if (!this.questions[number].tickall) {
+      for (i = 0; i < this.questions[number].answers.length; i++) {
         answerNumber = i + 1;
-        if (answerNumber % 2 && answerNumber < questions[number].answers.length) {
+        if (answerNumber % 2 && answerNumber < this.questions[number].answers.length) {
           floatClass = "css-clsFloatLeft";
-        } else if (answerNumber % 2 && answerNumber == questions[number].answers.length) {
+        } else if (answerNumber % 2 && answerNumber == this.questions[number].answers.length) {
           floatClass = "css-clsCenter";
         } else {
           floatClass = "css-clsFloatRight";
         }
         buttonAnswer = "btnAnswer" + i;
-        $content.append("<div id='answer" + i + "' class='" + floatClass + "'><input type='button' id='" + buttonAnswer + "' value='" + questions[number].answers[i].answerText + "' class='js-styleButton css-answerbtn' /></div>");
+        $content.append("<div id='answer" + i + "' class='" + floatClass + "'><input type='button' id='" + buttonAnswer + "' value='" + this.questions[number].answers[i].answerText + "' class='js-styleButton css-answerbtn' /></div>");
         $("#" + buttonAnswer).click(function() {
           thisQuizClass.checkAnswer(this.id)
         });
@@ -70,9 +72,9 @@ quizEngineClass.prototype = {
     } else {
       $content.append("<div id='tickAll'></div>");
       $tickAllDiv = $("#tickAll");
-      for (i = 0; i < questions[number].answers.length; i++) {
+      for (i = 0; i < this.questions[number].answers.length; i++) {
         tickAnswer = "chkAnswer" + i;
-        $tickAllDiv.append("<label class='css-checkboxLabel'><input type='checkbox' id='" + tickAnswer + "' value='" + questions[number].answers[i].answerText + "'/>" + questions[number].answers[i].answerText + "</label>");
+        $tickAllDiv.append("<label class='css-checkboxLabel'><input type='checkbox' id='" + tickAnswer + "' value='" + this.questions[number].answers[i].answerText + "'/>" + this.questions[number].answers[i].answerText + "</label>");
       }
       $tickAllDiv.append("<input type='button' id='btnSubmit' value='Submit Answer' class='js-styleButton css-tickSubmit' />");
       $("#btnSubmit").click(function() {
@@ -100,7 +102,7 @@ quizEngineClass.prototype = {
     var thisQuizClass = this;
     index = selectedInput.replace("btnAnswer", "");
     $("#content input").prop('disabled', 'disabled');
-    this.Popup(questions[this.questionNumber].answers[index].correct, questions[this.questionNumber].answerText, this.animationSpeed);
+    this.Popup(this.questions[this.questionNumber].answers[index].correct, this.questions[this.questionNumber].answerText, this.animationSpeed);
   },
 
   checkTickAnswers: function() {
@@ -114,8 +116,8 @@ quizEngineClass.prototype = {
       var id = parseInt(this.id.replace("chkAnswer", ""));
       selected.push(id);
     });
-    for (i = 0; i < questions[thisQuizClass.questionNumber].answers.length; i++) {
-      if (questions[thisQuizClass.questionNumber].answers[i].correct) {
+    for (i = 0; i < this.questions[thisQuizClass.questionNumber].answers.length; i++) {
+      if (this.questions[thisQuizClass.questionNumber].answers[i].correct) {
         answers.push(i);
       }
     }
@@ -125,7 +127,7 @@ quizEngineClass.prototype = {
     if (missedAnswers.length > 0 || selected.length > answers.length) {
       correct = false;
     }
-    thisQuizClass.Popup(correct, questions[thisQuizClass.questionNumber].answerText, this.animationSpeed);
+    thisQuizClass.Popup(correct, this.questions[thisQuizClass.questionNumber].answerText, this.animationSpeed);
   },
 
   Popup: function(correct, text) {
@@ -136,9 +138,9 @@ quizEngineClass.prototype = {
     } else {
       $Popup.append("<h1 class='css-incorrectHeader'>Incorrect...</h1>");
     }
-    if (questions[this.questionNumber].picture !== null) {
+    if (this.questions[this.questionNumber].picture !== null) {
       $Popup.append("<p class='css-pictureParagraph'>");
-      $Popup.append("<img src='" + questions[this.questionNumber].picture + "' class='css-answerImage' />");
+      $Popup.append("<img src='" + this.questions[this.questionNumber].picture + "' class='css-answerImage' />");
       $Popup.append("</p>");
     }
     if (!correct) {
@@ -153,13 +155,13 @@ quizEngineClass.prototype = {
         $Popup.empty();
       });
       thisQuizClass.questionNumber++;
-      if (thisQuizClass.questionNumber < questions.length) {
+      if (thisQuizClass.questionNumber < thisQuizClass.questions.length) {
         thisQuizClass.displayQuestion(thisQuizClass.questionNumber);
       } else {
         thisQuizClass.displayEndingPage();
       }
     });
-    if (questions[this.questionNumber].backbutton) {
+    if (this.questions[this.questionNumber].backbutton) {
       $Popup.append('<input type="button" value="Retry" class="css-nextQuestion js-styleButton js-retry" />');
       $(".js-retry").on("click", function(event) {
         $(this).siblings().andSelf().prop('disabled', 'disabled');
@@ -179,8 +181,8 @@ quizEngineClass.prototype = {
   displayEndingPage: function() {
     var thisQuizClass = this;
     $content.empty();
-    $content.append("<div id='score'>" + this.correctAnswers + "/" + questions.length + "</div>");
-    if (this.correctAnswers == questions.length) {
+    $content.append("<div id='score'>" + this.correctAnswers + "/" + this.questions.length + "</div>");
+    if (this.correctAnswers == this.questions.length) {
       $content.append("<div id='infoRequestHeader'>Text Goes Here</div>");
       $content.append("<p /><form id='contactInfo' name='contactInfo' action=''></form><p />");
       $form = $("#contactInfo");
