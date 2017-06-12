@@ -29,9 +29,6 @@ $content = $("#content");
 
 $(function() {
   var quizEngine = new quizEngineClass(true, 500, questions);
-  $("body").append('<div id="PopUp"></div>');
-  $Popup = $("#PopUp");
-  $Popup.hide();
   quizEngine.displayIntro();
 });
 
@@ -39,6 +36,9 @@ var quizEngineClass = function(displayKeyboard, animationSpeed, questions) {
   this.animationSpeed = animationSpeed;
   this.displayKeyboard = displayKeyboard;
   this.questions = questions;
+  $("body").append('<div id="PopUp"></div>');
+  $Popup = $("#PopUp");
+  $Popup.hide();
 };
 
 quizEngineClass.prototype = {
