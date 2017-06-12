@@ -1,0 +1,4 @@
+# QuizEngine
+A Quiz Engine for online or offline use. The application allows a developer to create their own quiz, and at the end gather information about the end user. Intened to be used as a Marketing tool, the engine should be robust enough for many purposes. The engine supports use as both an online tool, as well as an offline, and likewise supports implemenations with or without access to a keyboard (Touch screen for example). 
+
+Currently, the application requests the users First and Last Name, and an email address that they can be contacted at as well as if they wish to be contacted. This information can then be given off to PR/Sales and from there generate an in-house database of clients and potential clients. This is great for use at a convention, Expo or similar event to draw attention to your product, as well as being an interactive means of teaching people about your product.
