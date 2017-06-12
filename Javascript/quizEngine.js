@@ -27,24 +27,24 @@ questions.push(new question(true, "Example of Checkboxes.", answersTwo, "To get 
 correctAnswers = 0;
 $question = $("#question");
 $content = $("#content");
-animationSpeed = 500;
 
 $(function() {
-  var quizEngine = new quizEngineClass(true);
-
+  var quizEngine = new quizEngineClass(true, 500);
   $("body").append('<div id="PopUp"></div>');
   $Popup = $("#PopUp");
   $Popup.hide();
-  questionNumber = 0;
   quizEngine.displayIntro();
 });
 
-var quizEngineClass = function(displayKeyboard) {
+var quizEngineClass = function(displayKeyboard, animationSpeed) {
+  this.animationSpeed = animationSpeed;
   this.displayKeyboard = displayKeyboard;
 };
 
 quizEngineClass.prototype = {
   displayKeyboard: false,
+  animationSpeed: 500,
+  questionNumber: 0,
 
   displayQuestion: function(number) {
     var thisQuizClass = this;
@@ -84,6 +84,7 @@ quizEngineClass.prototype = {
   displayIntro: function() {
     var thisQuizClass = this;
     correctAnswers = 0;
+    this.questionNumber = 0;
     $firstName = null;
     $lastName = null;
     $email = null;
@@ -99,7 +100,7 @@ quizEngineClass.prototype = {
     var thisQuizClass = this;
     index = selectedInput.replace("btnAnswer", "");
     $("#content input").prop('disabled', 'disabled');
-    thisQuizClass.Popup(questions[questionNumber].answers[index].correct, questions[questionNumber].answerText, animationSpeed);
+    this.Popup(questions[this.questionNumber].answers[index].correct, questions[this.questionNumber].answerText, this.animationSpeed);
   },
 
   checkTickAnswers: function() {
@@ -113,8 +114,8 @@ quizEngineClass.prototype = {
       var id = parseInt(this.id.replace("chkAnswer", ""));
       selected.push(id);
     });
-    for (i = 0; i < questions[questionNumber].answers.length; i++) {
-      if (questions[questionNumber].answers[i].correct) {
+    for (i = 0; i < questions[thisQuizClass.questionNumber].answers.length; i++) {
+      if (questions[thisQuizClass.questionNumber].answers[i].correct) {
         answers.push(i);
       }
     }
@@ -124,10 +125,10 @@ quizEngineClass.prototype = {
     if (missedAnswers.length > 0) {
       correct = false;
     }
-    thisQuizClass.Popup(correct, questions[questionNumber].answerText, animationSpeed);
+    thisQuizClass.Popup(correct, questions[thisQuizClass.questionNumber].answerText, this.animationSpeed);
   },
 
-  Popup: function(correct, text, animationSpeed) {
+  Popup: function(correct, text) {
     var thisQuizClass = this;
     if (correct) {
       $Popup.append("<h1 class='css-correctHeader'>Correct</h1>");
@@ -135,9 +136,9 @@ quizEngineClass.prototype = {
     } else {
       $Popup.append("<h1 class='css-incorrectHeader'>Incorrect...</h1>");
     }
-    if (questions[questionNumber].picture !== null) {
+    if (questions[this.questionNumber].picture !== null) {
       $Popup.append("<p class='css-pictureParagraph'>");
-      $Popup.append("<img src='" + questions[questionNumber].picture + "' class='css-answerImage' />");
+      $Popup.append("<img src='" + questions[this.questionNumber].picture + "' class='css-answerImage' />");
       $Popup.append("</p>");
     }
     if (!correct) {
@@ -148,30 +149,30 @@ quizEngineClass.prototype = {
     $Popup.append('<input type="button" value="Next Question" class="css-nextQuestion js-styleButton js-nextQuestion" />');
     $(".js-nextQuestion").on("click", function(event) {
       $(this).siblings().andSelf().prop('disabled', 'disabled');
-      $Popup.fadeToggle(animationSpeed, "swing", function() {
+      $Popup.fadeToggle(thisQuizClass.animationSpeed, "swing", function() {
         $Popup.empty();
       });
-      questionNumber++;
-      if (questionNumber < questions.length) {
-        thisQuizClass.displayQuestion(questionNumber);
+      thisQuizClass.questionNumber++;
+      if (thisQuizClass.questionNumber < questions.length) {
+        thisQuizClass.displayQuestion(thisQuizClass.questionNumber);
       } else {
         thisQuizClass.displayEndingPage();
       }
     });
-    if (questions[questionNumber].backbutton) {
+    if (questions[this.questionNumber].backbutton) {
       $Popup.append('<input type="button" value="Retry" class="css-nextQuestion js-styleButton js-retry" />');
       $(".js-retry").on("click", function(event) {
         $(this).siblings().andSelf().prop('disabled', 'disabled');
-        $Popup.fadeToggle(animationSpeed, "swing", function() {
+        $Popup.fadeToggle(thisQuizClass.animationSpeed, "swing", function() {
           $Popup.empty();
         });
         if (correct) {
           correctAnswers--;
         }
-        thisQuizClass.displayQuestion(questionNumber);
+        thisQuizClass.displayQuestion(this.questionNumber);
       });
     }
-    $Popup.fadeToggle(animationSpeed);
+    $Popup.fadeToggle(thisQuizClass.animationSpeed);
   },
 
 
@@ -233,7 +234,7 @@ quizEngineClass.prototype = {
     }
     $("#submitContact").prop('disabled', 'disabled');
     if (error) {
-      errorPopUp(errors, animationSpeed);
+      errorPopUp(errors, thisQuizClass.animationSpeed);
     } else {
       submitForm();
     }
@@ -246,7 +247,7 @@ quizEngineClass.prototype = {
     return regex.test(email);
   },
 
-  errorPopUp: function(errors, animationSpeed) {
+  errorPopUp: function(errors) {
     var thisQuizClass = this;
     var errorCount = errors.length;
     $Popup.append("<h1>Errors</h1>");
@@ -265,9 +266,9 @@ quizEngineClass.prototype = {
     $(".errorFix").click(function(event) {
       $("#submitContact").removeAttr('disabled');
       $("#Popup input").attr('disabled', 'disabled');
-      $Popup.fadeToggle(animationSpeed);
+      $Popup.fadeToggle(thisQuizClass.animationSpeed);
     });
-    $Popup.fadeToggle(animationSpeed);
+    $Popup.fadeToggle(thisQuizClass.animationSpeed);
   },
 
 
@@ -293,12 +294,12 @@ quizEngineClass.prototype = {
       $Popup.append("<input type='button' value='Okay' class='css-btnStartOver' />");
       $(".btnStartOver").click(function() {
         location.reload(false);
-        $Popup.fadeToggle(animationSpeed, "swing", function() {
+        $Popup.fadeToggle(thisQuizClass.animationSpeed, "swing", function() {
           $Popup.empty();
         });
       });
       if (!$Popup.is(':visible')) {
-        $Popup.fadeToggle(animationSpeed);
+        $Popup.fadeToggle(thisQuizClass.animationSpeed);
       }
     });
     request.fail(function(xmlHttpRequest, textStatus, errorThrown) {
