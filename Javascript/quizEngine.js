@@ -30,18 +30,21 @@ $content = $("#content");
 animationSpeed = 500;
 
 $(function() {
-  var quizEngine = new quizEngineClass();
+  var quizEngine = new quizEngineClass(true);
+
      $("body").append('<div id="PopUp"></div>');
      $Popup = $("#PopUp");
      $Popup.hide();
      questionNumber = 0;
      quizEngine.displayIntro();
-     jsKeyboard.init("virtualKeyboard");
 });
 
-var quizEngineClass = function(){};
+var quizEngineClass = function(displayKeyboard){
+  this.displayKeyboard = displayKeyboard;
+};
 
 quizEngineClass.prototype = {
+displayKeyboard: false,
 
 displayQuestion: function(number) {
   var thisQuizClass = this;
@@ -173,11 +176,15 @@ displayEndingPage: function() {
           $content.append("<div id='infoRequestHeader'>Text Goes Here</div>");
           $content.append("<p /><form id='contactInfo' name='contactInfo' action=''></form><p />");
           $form = $("#contactInfo");
-          $form.append("<label for='firstname'>First Name: </label><input type='textbox' name='firstname' id='txtfirstname' onfocus='jsKeyboard.focus(this)' class='css-name' /><br />");
-          $form.append("<label for='lastname'>Last Name: </label><input type='textbox' name='lastname' id='txtlastname' onfocus='jsKeyboard.focus(this)' class='css-name' /><br />");
-          $form.append("<label for='email'>Email: </label><input type='textbox' name='email' id='txtemail' onfocus='jsKeyboard.focus(this)' class='css-email' /><br />");
+          $form.append("<label for='firstname'>First Name: </label><input type='textbox' name='firstname' id='txtfirstname' class='css-name' /><br />");
+          $form.append("<label for='lastname'>Last Name: </label><input type='textbox' name='lastname' id='txtlastname' class='css-name' /><br />");
+          $form.append("<label for='email'>Email: </label><input type='textbox' name='email' id='txtemail' class='css-email' /><br />");
           $form.append("<label for='opt-in' class='css-optInLabel'>Opt-In To Win:</label><input type='checkbox' name='opt-in' id='chkOptIn' value='true' checked='checked' class='css-optInCheckbox' /><br />");
           $form.append("<input type='submit' class='css-submitContact js-styleButton' id='submitContact' value='Submit!' />");
+          if (this.displayKeyboard) {
+          jsKeyboard.init("virtualKeyboard");
+          $("#txtfirstname, #txtlastname, #txtemail").focusin(function() {jsKeyboard.focus(this) });
+          }
 
           $submitContact = $("#contactInfo");
           $submitContact.submit(function() { return thisQuizClass.verifySubmission() });
