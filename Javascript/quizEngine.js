@@ -4,7 +4,7 @@ function question(tickall, question, answers, answerText, picture, backenabled) 
      this.answers = answers;
      this.answerText = answerText;
      this.picture = picture;
-	 this.backbutton = backenabled;
+	   this.backbutton = backenabled;
 }
 
 function answer(answerText, correct) {
@@ -44,6 +44,7 @@ var quizEngineClass = function(){};
 quizEngineClass.prototype = {
 
 displayQuestion: function(number) {
+  var thisQuizClass = this;
      $content.empty();
      $content.append("<div id='question'>"+questions[number].question+"</div>");
      $question.text(questions[number].question);
@@ -61,7 +62,7 @@ displayQuestion: function(number) {
                }
                buttonAnswer = "btnAnswer" + i;
                $content.append("<div id='answer"+i+"' class='"+floatClass+"'><input type='button' id='"+buttonAnswer+"' value='"+questions[number].answers[i].answerText+"' class='js-styleButton css-answerbtn' /></div>");
-               $("#"+buttonAnswer).click(function() { checkAnswer(this.id) });
+               $("#"+buttonAnswer).click(function() { thisQuizClass.checkAnswer(this.id) });
           }
      }
      else {
@@ -72,11 +73,12 @@ displayQuestion: function(number) {
             $tickAllDiv.append("<label class='css-checkboxLabel'><input type='checkbox' id='"+tickAnswer+"' value='"+questions[number].answers[i].answerText+"'/>"+questions[number].answers[i].answerText+"</label>");
        }
        $tickAllDiv.append("<input type='button' id='btnSubmit' value='Submit Answer' class='js-styleButton css-tickSubmit' />");
-       $("#btnSubmit").click(function () { checkTickAnswers(); });
+       $("#btnSubmit").click(function () { thisQuizClass.checkTickAnswers(); });
      }
 },
 
 displayIntro: function() {
+  var thisQuizClass = this;
      correctAnswers = 0;
      $firstName = null;
      $lastName = null;
@@ -84,16 +86,18 @@ displayIntro: function() {
      $optIn = null;
      $content.empty();
      $content.append("<div id='question' class='css-introDivision'><input type='button' id='btnStart' class='js-styleButton css-startQuizBtn' value='Start The Quiz!' /></div>");
-     $("#btnStart").click(function() { displayQuestion(0); });
+     $("#btnStart").click(function() { thisQuizClass.displayQuestion(0); });
 },
 
 checkAnswer: function(selectedInput) {
+  var thisQuizClass = this;
           index = selectedInput.replace("btnAnswer", "");
           $("#content input").prop('disabled', 'disabled');
-          Popup(questions[questionNumber].answers[index].correct, questions[questionNumber].answerText, animationSpeed);
+          thisQuizClass.Popup(questions[questionNumber].answers[index].correct, questions[questionNumber].answerText, animationSpeed);
 },
 
 checkTickAnswers: function() {
+  var thisQuizClass = this;
      var selected = new Array();
      var answers = new Array();
      var missedAnswers = new Array();
@@ -112,10 +116,11 @@ checkTickAnswers: function() {
      if (missedAnswers.length > 0) {
           correct = false;
      }
-     Popup(correct, questions[questionNumber].answerText, animationSpeed);
+     thisQuizClass.Popup(correct, questions[questionNumber].answerText, animationSpeed);
 },
 
 Popup: function (correct, text, animationSpeed) {
+  var thisQuizClass = this;
      if (correct) {
           $Popup.append("<h1 class='css-correctHeader'>Correct</h1>");
           correctAnswers++;
@@ -139,10 +144,10 @@ Popup: function (correct, text, animationSpeed) {
                 $Popup.fadeToggle(animationSpeed, "swing", function() { $Popup.empty(); });
                 questionNumber++;
                 if (questionNumber < questions.length) {
-                     displayQuestion(questionNumber);
+                     thisQuizClass.displayQuestion(questionNumber);
                 }
                 else {
-                     displayEndingPage();
+                     thisQuizClass.displayEndingPage();
                 }
           });
 		  if (questions[questionNumber].backbutton) {
@@ -153,7 +158,7 @@ Popup: function (correct, text, animationSpeed) {
 					if (correct) {
 					     correctAnswers--;
 					}
-                         displayQuestion(questionNumber);
+                         thisQuizClass.displayQuestion(questionNumber);
                 });
 		  }
           $Popup.fadeToggle(animationSpeed);
@@ -161,6 +166,7 @@ Popup: function (correct, text, animationSpeed) {
 
 
 displayEndingPage: function() {
+  var thisQuizClass = this;
      $content.empty();
      $content.append("<div id='score'>"+correctAnswers+"/"+questions.length+"</div>");
      if (correctAnswers == questions.length) {
@@ -174,16 +180,17 @@ displayEndingPage: function() {
           $form.append("<input type='submit' class='css-submitContact js-styleButton' id='submitContact' value='Submit!' />");
 
           $submitContact = $("#contactInfo");
-          $submitContact.submit(function() { return verifySubmission() });
+          $submitContact.submit(function() { return thisQuizClass.verifySubmission() });
           $content.append("</div>");
      }
           $content.append("<input type='button' value='Start Over!' id='btnStartOver' class='js-styleButton css-startOverBtn' />");
           $("#btnStartOver").on("click", function() {
-               displayIntro();
+               thisQuizClass.displayIntro();
           });
 },
 
 verifySubmission: function() {
+  var thisQuizClass = this;
      var errors = Array();
      var error = false;
      $firstName = $("#txtfirstname");
@@ -198,7 +205,7 @@ verifySubmission: function() {
           error = true;
           errors.push("You didn't enter a last name.");
      }
-     if ($email.val().length == 0 || !IsEmail($email.val())) {
+     if ($email.val().length == 0 || !thisQuizClass.IsEmail($email.val())) {
           error = true;
           errors.push("You didn't enter a valid email address.");
      }
@@ -223,6 +230,7 @@ IsEmail: function(email) {
 },
 
 errorPopUp: function(errors, animationSpeed) {
+  var thisQuizClass = this;
      var errorCount = errors.length;
      $Popup.append("<h1>Errors</h1>");
      $Popup.append("<ul>");
@@ -235,7 +243,7 @@ errorPopUp: function(errors, animationSpeed) {
      $(".errorOkay").click(function(event) {
            $("#Popup input").attr('disabled', 'disabled');
            $Popup.empty();
-           submitForm();
+           thisQuizClass.submitForm();
      });
      $(".errorFix").click(function(event) {
           $("#submitContact").removeAttr('disabled');
