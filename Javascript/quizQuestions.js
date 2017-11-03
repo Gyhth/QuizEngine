@@ -14,5 +14,5 @@ $question = $("#question");
 $content = $("#content");
 
 $(function() {
-  var quizEngine = new quizEngineClass(true, 500, questions);
+  var quizEngine = new quizEngineClass(true, 500, questions, null);
 });

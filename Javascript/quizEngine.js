@@ -12,10 +12,16 @@ function answer(answerText, correct) {
   this.correct = correct;
 }
 
-var quizEngineClass = function(displayKeyboard, animationSpeed, questions) {
+var quizEngineClass = function(displayKeyboard, animationSpeed, questions, requiredAnswers) {
   this.animationSpeed = animationSpeed;
   this.displayKeyboard = displayKeyboard;
   this.questions = questions;
+  if (requiredAnswers == null) {
+    this.requiredAnswers = this.questions.length;
+  }
+  else {
+    this.requiredAnswers = requiredAnswers;
+  }
   if (!$("#Popup").length) {
     $("body").append('<div id="PopUp"></div>');
     $Popup = $("#PopUp");
@@ -30,6 +36,7 @@ quizEngineClass.prototype = {
   questionNumber: 0,
   correctAnswers: 0,
   questions: "",
+  requiredAnswers: null,
 
   displayQuestion: function(number) {
     var thisQuizClass = this;
@@ -164,7 +171,7 @@ quizEngineClass.prototype = {
     var thisQuizClass = this;
     $content.empty();
     $content.append("<div id='score'>" + this.correctAnswers + "/" + this.questions.length + "</div>");
-    if (this.correctAnswers == this.questions.length) {
+    if (this.correctAnswers >= this.requiredAnswers) {
       $content.append("<div id='infoRequestHeader'>Text Goes Here</div>");
       $content.append("<p /><form id='contactInfo' name='contactInfo' action=''></form><p />");
       $form = $("#contactInfo");
